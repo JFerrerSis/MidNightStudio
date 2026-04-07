@@ -110,5 +110,13 @@
     "imagen": "/images/products/poster.jpeg",
     "categoria": "Papelería",
     "descripcion": "Impresión de alta resolución."
+  },
+  {
+    "id": "00017",
+    "nombre": "LMINA DE ALUMINIO SUBLIMADA A4",
+    "precio": 10,
+    "imagen": "/images/products/lamina.jpeg",
+    "categoria": "Papelería",
+    "descripcion": "Impresión de alta resolución."
   }
 ]
