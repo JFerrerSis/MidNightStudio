@@ -36,15 +36,13 @@ import Footer from "../components/ui/Footer.astro";
     </main>
 
     <Footer />
-
 <script>
   import Toastify from "toastify-js";
-  import { addProductToCart } from "../store/cartStore";
+  // CAMBIO: Importamos 'addToCart' que es el nombre real en tu store
+  import { addToCart, isCartOpen } from "../store/cartStore";
 
-  // 1. Sistema de Notificaciones
   function showMidnightToast(message: string, type: "success" | "error" | "warning" = "success") {
     const colors = { success: "#00f5d4", error: "#ff4b2b", warning: "#facc15" };
-    // Evitar acumulación de toasts en transiciones rápidas
     document.querySelectorAll(".toastify").forEach(t => t.remove());
 
     Toastify({
@@ -61,21 +59,22 @@ import Footer from "../components/ui/Footer.astro";
     }).showToast();
   }
 
-  // 2. Manejador Global de Compras
   const handleGlobalPurchase = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
     const btn = target.closest('.add-to-cart-btn');
 
     if (btn) {
       e.preventDefault();
-      e.stopPropagation();
-
       const productData = btn.getAttribute('data-product');
       if (productData) {
         try {
           const product = JSON.parse(productData);
-          addProductToCart(product);
+          // CAMBIO: Usamos la función correcta
+          addToCart(product); 
           showMidnightToast(`${product.nombre} ADQUIRIDO`, "success");
+          
+          // Opcional: Abrir el carrito automáticamente al comprar
+          // isCartOpen.set(true); 
         } catch (err) {
           console.error("Error al procesar producto:", err);
         }
@@ -83,41 +82,19 @@ import Footer from "../components/ui/Footer.astro";
     }
   };
 
-  // 3. Reinicio de Componentes (Header y Carrito)
-  const refreshComponentLogic = () => {
-    // Buscamos botones de toggle que hayan perdido su listener
-    const cartToggle = document.querySelector('.cart-toggle-btn');
-    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-
-    // Aquí disparamos un evento personalizado que tus componentes 
-    // Header y CartDrawer deben escuchar para re-inicializarse
-    document.dispatchEvent(new CustomEvent('midnight:refresh-ui'));
-    
-    // Si el Header tiene lógica simple de clases, la reforzamos aquí
-    console.log("Sistema UI Re-conectado");
-  };
-
   const initSystem = () => {
-    window.midnightToast = showMidnightToast;
+    // Evitamos duplicar el listener en cada cambio de página
+    document.removeEventListener('click', handleGlobalPurchase);
+    document.addEventListener('click', handleGlobalPurchase);
 
-    // Limpieza de listeners globales para evitar duplicados
-    document.removeEventListener('click', handleGlobalPurchase, true);
-    document.addEventListener('click', handleGlobalPurchase, true);
-
-    refreshComponentLogic();
-
-    if (!sessionStorage.getItem("midnight_auth")) {
-      setTimeout(() => window.midnightToast?.("SISTEMA CONECTADO", "success"), 800);
-      sessionStorage.setItem("midnight_auth", "true");
+    // Forzamos la apertura si algún componente manual lo requiere
+    const cartTrigger = document.getElementById('cart-trigger');
+    if (cartTrigger) {
+      cartTrigger.onclick = () => isCartOpen.set(true);
     }
   };
 
-  // Escuchar todos los eventos de ciclo de vida de Astro
   document.addEventListener("astro:page-load", initSystem);
-  document.addEventListener("astro:after-swap", initSystem);
-
-  // Ejecución inmediata para el primer renderizado
-  initSystem();
 </script>
     <style is:global>
       /* View Transitions Fix */

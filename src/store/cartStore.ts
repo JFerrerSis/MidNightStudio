@@ -1,7 +1,7 @@
-import { atom, computed, onMount } from 'nanostores';
+import { atom, computed } from 'nanostores';
 import type { CartItem, Product } from '../types/product';
 
-// Clave para el almacenamiento
+// Clave para el almacenamiento en el navegador
 const STORAGE_KEY = 'midnight_cart_v1';
 
 export interface CustomerData {
@@ -13,11 +13,16 @@ export interface CustomerData {
   metodoPago: string;
 }
 
-// Helper para obtener datos iniciales de forma segura (evita errores de SSR en Astro)
+// 1. Helper para obtener datos iniciales de forma segura (evita errores de SSR en Astro)
 const getInitialCart = (): CartItem[] => {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
+    try {
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Error al parsear el carrito del localStorage", e);
+      return [];
+    }
   }
   return [];
 };
@@ -32,29 +37,38 @@ export const customerData = atom<CustomerData>({
   telefono: '',
   direccion: '',
   metodoEntrega: 'PICKUP',
-  metodoPago: 'PAGO MOVIL'
+  metodoPago: 'PAGO MÓVIL'
 });
 
 // --- Persistencia Automática ---
-// Escucha cambios en cartItems y guarda en localStorage automáticamente
-cartItems.listen((items) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-});
+// Escucha cambios en cartItems y guarda en localStorage automáticamente (solo en el cliente)
+if (typeof window !== 'undefined') {
+  cartItems.listen((items) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  });
+}
 
-// --- Computado ---
+// --- Computados ---
 export const cartTotal = computed(cartItems, (items) => {
   return items.reduce((total, item) => total + (item.precio * item.cantidad), 0);
 });
 
-// --- Acciones ---
-export function addProductToCart(product: Product) {
+// --- Acciones del Carrito ---
+
+/**
+ * Añade un producto al carrito o incrementa su cantidad si ya existe.
+ * Compatible con la página de producto [id].astro
+ */
+export function addToCart(product: Product | CartItem) {
   const currentItems = cartItems.get();
   const existingItem = currentItems.find(item => item.id === product.id);
 
   if (existingItem) {
     increaseQuantity(existingItem.id);
   } else {
-    cartItems.set([...currentItems, { ...product, cantidad: 1 }]);
+    // Forzamos que el nuevo item entre con cantidad 1
+    const newItem = { ...product, cantidad: 1 } as CartItem;
+    cartItems.set([...currentItems, newItem]);
   }
 }
 
@@ -85,15 +99,19 @@ export function removeFromCart(id: string) {
 
 export function clearCart() {
   cartItems.set([]);
-  localStorage.removeItem(STORAGE_KEY);
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(STORAGE_KEY);
+  }
 }
 
+// --- Lógica de Pedido por WhatsApp ---
 export function sendOrderToWhatsApp() {
-  // ... tu lógica de WhatsApp se mantiene igual
   const items = cartItems.get();
   const data = customerData.get();
   const total = cartTotal.get();
-  const phone = import.meta.env.PUBLIC_WHATSAPP_NUMBER;
+  
+  // Asegúrate de definir PUBLIC_WHATSAPP_NUMBER en tu archivo .env
+  const phone = import.meta.env.PUBLIC_WHATSAPP_NUMBER || "TU_NUMERO_AQUI";
   
   if (items.length === 0) return;
 
@@ -105,7 +123,7 @@ export function sendOrderToWhatsApp() {
   message += `📍 *ENTREGA:* ${data.metodoEntrega}\n`;
   
   if (data.metodoEntrega === 'DELIVERY') {
-    message += `🏠 *DIRECCIÓN:* ${data.direccion}\n`;
+    message += `🏠 *DIRECCIÓN:* ${data.direccion.toUpperCase()}\n`;
   }
   
   message += `💳 *PAGO:* ${data.metodoPago}\n`;

@@ -2,31 +2,36 @@
 // src/components/ui/ProductSkeleton.astro
 ---
 
-<div class="relative bg-[#0d0e12]/80 border border-white/5 p-3 md:p-4 rounded-md overflow-hidden flex flex-col h-full animate-skeleton-pulse shadow-2xl">
+<div class="relative bg-[#0d0e12]/80 border border-white/10 p-4 md:p-5 rounded-2xl overflow-hidden flex flex-col h-full animate-skeleton-pulse shadow-2xl">
   
-  <div class="relative aspect-square mb-4 overflow-hidden bg-white/5 border border-white/5 rounded shrink-0">
+  <div class="relative aspect-square mb-4 md:mb-5 overflow-hidden bg-white/5 border border-white/5 rounded-xl shrink-0">
     <div class="absolute inset-0 bg-linear-to-r from-transparent via-neon-green/10 to-transparent -translate-x-full animate-skeleton-scan"></div>
+    
+    <div class="absolute top-2 left-2 w-16 h-4 bg-white/5 rounded-full overflow-hidden">
+        <div class="absolute inset-0 bg-linear-to-r from-transparent via-neon-green/5 to-transparent -translate-x-full animate-skeleton-scan"></div>
+    </div>
   </div>
 
-  <div class="space-y-2 flex-1 flex flex-col justify-between">
+  <div class="space-y-4 flex-1 flex flex-col justify-between">
     <div class="min-h-10 space-y-2">
-        <div class="h-4 bg-white/5 rounded-sm w-3/4 relative overflow-hidden">
+        <div class="h-4 bg-white/5 rounded-full w-full relative overflow-hidden">
             <div class="absolute inset-0 bg-linear-to-r from-transparent via-neon-green/10 to-transparent -translate-x-full animate-skeleton-scan delay-75"></div>
         </div>
-        <div class="h-4 bg-white/5 rounded-sm w-1/2 relative overflow-hidden">
+        <div class="h-4 bg-white/5 rounded-full w-2/3 relative overflow-hidden">
             <div class="absolute inset-0 bg-linear-to-r from-transparent via-neon-green/10 to-transparent -translate-x-full animate-skeleton-scan delay-150"></div>
         </div>
     </div>
     
-    <div class="flex items-center justify-between pt-2 border-t border-white/5 mt-auto gap-4">
-      <div class="flex flex-col w-20">
-        <div class="h-6 bg-white/5 rounded-sm relative overflow-hidden">
+    <div class="flex items-center justify-between pt-4 border-t border-white/10 mt-auto gap-4">
+      <div class="flex flex-col w-20 space-y-1">
+        <div class="h-2 bg-white/5 rounded-full w-10 overflow-hidden"></div>
+        <div class="h-6 bg-white/5 rounded-lg relative overflow-hidden">
             <div class="absolute inset-0 bg-linear-to-r from-transparent via-neon-green/10 to-transparent -translate-x-full animate-skeleton-scan delay-200"></div>
         </div>
       </div>
       
-      <div class="h-10 bg-white/5 rounded-sm w-24 relative overflow-hidden">
-        <div class="absolute inset-0 bg-linear-to-r from-transparent via-neon-green/10 to-transparent -translate-x-full animate-skeleton-scan delay-300"></div>
+      <div class="h-10 md:h-12 w-10 md:w-12 bg-white/5 rounded-xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-linear-to-r from-transparent via-neon-green/20 to-transparent -translate-x-full animate-skeleton-scan delay-300"></div>
       </div>
     </div>
   </div>
@@ -34,8 +39,14 @@
 
 <style is:global>
   @keyframes skeleton-pulse {
-    0%, 100% { opacity: 0.8; border-color: rgba(255, 255, 255, 0.05); shadow: 0 0 0px rgba(0, 245, 212, 0); }
-    50% { opacity: 1; border-color: rgba(0, 245, 212, 0.15); shadow: 0 0 15px rgba(0, 245, 212, 0.05); }
+    0%, 100% { 
+        opacity: 0.6; 
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+    50% { 
+        opacity: 1; 
+        border-color: rgba(0, 245, 212, 0.1); /* Sutil destello neón */
+    }
   }
 
   @keyframes skeleton-scan {
@@ -48,6 +59,12 @@
   }
 
   .animate-skeleton-scan {
-    animation: skeleton-scan 1.5s linear infinite;
+    animation: skeleton-scan 1.8s ease-in-out infinite;
   }
+
+  /* Delays para que el barrido no sea simultáneo y se vea más orgánico */
+  .delay-75 { animation-delay: 75ms; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
 </style>

@@ -1,28 +1,55 @@
-<nav class="fixed top-0 w-full z-50 bg-[#08090d]/80 backdrop-blur-md border-b border-white/5">
-  <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-    <a href="/" class="font-black italic text-xl tracking-tighter hover:text-neon-green transition-colors">
-      MIDNIGHT<span class="text-neon-green">STUDIO</span>
+---
+// src/components/layout/Header.astro
+import { ShoppingBag, Zap } from 'lucide-astro';
+---
+
+<nav class="fixed top-0 w-full z-50 bg-[#08090d]/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300" id="main-nav">
+  <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center transition-all duration-300" id="nav-container">
+    
+    <a href="/" class="flex items-center gap-2 group transition-transform active:scale-95">
+      <div class="bg-neon-green p-1 rounded-lg group-hover:rotate-12 transition-transform duration-300">
+        <Zap size={18} fill="black" class="text-black" />
+      </div>
+      <span class="font-black italic text-xl md:text-2xl tracking-tighter text-white uppercase">
+        MIDNIGHT<span class="text-neon-green group-hover:drop-shadow-[0_0_8px_rgba(0,245,212,0.5)] transition-all">STUDIO</span>
+      </span>
     </a>
 
-    <button id="cart-trigger" class="relative p-3 bg-white/5 hover:bg-neon-green/10 border border-white/10 transition-all rounded-sm group">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:text-neon-green">
-        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
-        <path d="M3 6h18"></path>
-        <path d="M16 10a4 4 0 0 1-8 0"></path>
-      </svg>
-      <span id="cart-counter" class="absolute -top-1 -right-1 bg-neon-green text-black font-mono font-bold text-[10px] w-5 h-5 flex items-center justify-center rounded-full scale-0 transition-transform">0</span>
+    <button 
+      id="cart-trigger" 
+      class="relative p-3 bg-white/5 hover:bg-neon-green/10 border border-white/10 hover:border-neon-green/40 transition-all rounded-xl group outline-none"
+      aria-label="Abrir Carrito"
+    >
+      <div class="absolute inset-0 bg-neon-green/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+      
+      <ShoppingBag 
+        size={22} 
+        strokeWidth={2} 
+        class="text-white/70 group-hover:text-neon-green transition-colors relative z-10" 
+      />
+
+      <span 
+        id="cart-counter" 
+        class="absolute -top-1.5 -right-1.5 bg-neon-green text-black font-mono font-black text-[10px] min-w-[20px] h-[20px] flex items-center justify-center rounded-full scale-0 transition-all duration-300 shadow-[0_0_15px_rgba(0,245,212,0.4)] border-2 border-[#08090d] z-20"
+      >
+        0
+      </span>
     </button>
   </div>
 </nav>
+
 <script>
   import { cartItems, isCartOpen } from '../../store/cartStore';
 
   const initHeader = () => {
-    const counter = document.getElementById('cart-counter');
-    const trigger = document.getElementById('cart-trigger');
+    const trigger = document.querySelector('#cart-trigger');
+    const counter = document.querySelector('#cart-counter');
+    const nav = document.querySelector('#main-nav');
+    const container = document.querySelector('#nav-container');
 
-    // 1. Suscribirse al Store (Nano Stores maneja bien la persistencia)
-    cartItems.subscribe(items => {
+    if (!trigger) return;
+
+    const unsubscribe = cartItems.subscribe(items => {
       const total = items.reduce((acc, item) => acc + (item.cantidad || 0), 0);
       if (counter) {
         counter.textContent = total.toString();
@@ -34,19 +61,46 @@
       }
     });
 
-    // 2. Event Listener con protección de duplicados
-    if (trigger) {
-      // Limpiamos cualquier listener viejo para evitar dobles aperturas
-      trigger.onclick = (e) => {
-        e.preventDefault();
-        isCartOpen.set(true);
-      };
-    }
+    const toggleCart = (e: Event) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      isCartOpen.set(true);
+    };
+
+    trigger.addEventListener('click', toggleCart);
+
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        nav?.classList.add('bg-[#08090d]/95', 'border-white/10');
+        container?.classList.replace('h-20', 'h-16');
+      } else {
+        nav?.classList.remove('bg-[#08090d]/95', 'border-white/10');
+        container?.classList.replace('h-16', 'h-20');
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+
+    document.addEventListener('astro:before-preparation', () => {
+      unsubscribe();
+      trigger.removeEventListener('click', toggleCart);
+      window.removeEventListener('scroll', handleScroll);
+    }, { once: true });
   };
 
-  // 3. LA CLAVE: Re-inicializar en cada cambio de página de Astro
   document.addEventListener('astro:page-load', initHeader);
-  
-  // Ejecución inicial
-  initHeader();
 </script>
+
+<style>
+  #main-nav {
+    backdrop-filter: blur(12px) saturate(180%);
+  }
+  
+  #cart-counter {
+    will-change: transform;
+    /* Evita que el texto se vea borroso en la animación */
+    backface-visibility: hidden;
+    /* Asegura que el número esté perfectamente centrado */
+    line-height: 1;
+    padding-top: 1px;
+  }
+</style>

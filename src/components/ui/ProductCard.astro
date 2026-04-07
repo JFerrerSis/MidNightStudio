@@ -1,6 +1,8 @@
 ---
 // src/components/ui/ProductCard.astro
 import type { Product } from '../../types/product'; 
+// Importamos el icono desde la librería
+import { ShoppingCart } from 'lucide-astro';
 
 interface Props extends Product {}
 const { id, nombre, precio, imagen, categoria } = Astro.props;
@@ -25,7 +27,7 @@ const productData = JSON.stringify({ id, nombre, precio, imagen, categoria });
     />
     
     <div class="absolute top-2 left-2 bg-black/90 border border-neon-green/30 px-3 py-1 z-20 rounded-full">
-      <p class="text-[7px] md:text-[9px] font-mono text-neon-green tracking-[0.1em] uppercase font-bold">
+      <p class="text-[7px] md:text-[9px] font-mono text-neon-green tracking-widest uppercase font-bold">
         {categoria}
       </p>
     </div>
@@ -50,21 +52,11 @@ const productData = JSON.stringify({ id, nombre, precio, imagen, categoria });
         data-product={productData}
         aria-label="Añadir al carrito"
       >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width="20" 
-          height="20" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          stroke-width="2.5" 
-          stroke-linecap="round" 
-          stroke-linejoin="round" 
-          class="transition-transform group-hover/btn:scale-110"
-        >
-          <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
-          <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.1-5.38a.5.5 0 0 0-.5-.62H7.5"/>
-        </svg>
+        <ShoppingCart 
+          size={20} 
+          strokeWidth={2.5} 
+          class="transition-transform group-hover/btn:scale-110" 
+        />
       </button>
     </div>
   </div>

@@ -1,25 +1,52 @@
 ---
+// src/components/ui/NavigationCard.astro
+import { ArrowRight } from 'lucide-astro';
+
 interface Props {
-	href: string;
-	title: string;
-	description?: string;
-	isPrimary?: boolean; // Para destacar el botón de Catálogo
+    href: string;
+    title: string;
+    description?: string;
+    isPrimary?: boolean; 
 }
 
 const { href, title, description, isPrimary = false } = Astro.props;
 ---
 
 <a 
-	href={href}
-	class={`group relative w-full p-4 rounded-2xl border transition-all duration-300 flex flex-col gap-1 
-	${isPrimary 
-		? "bg-white text-black border-white hover:bg-transparent hover:text-white" 
-		: "bg-white/5 border-white/10 hover:border-purple-500/50 hover:bg-white/10"
-	}`}
+    href={href}
+    class={`group relative w-full p-5 rounded-2xl border transition-all duration-500 flex flex-col gap-2 overflow-hidden
+    ${isPrimary 
+        ? "bg-neon-green text-black border-neon-green hover:bg-black hover:text-neon-green shadow-[0_0_20px_rgba(0,245,212,0.15)]" 
+        : "bg-white/5 border-white/10 hover:border-neon-green/50 hover:bg-white/10 text-white"
+    }`}
 >
-	<div class="flex justify-between items-center">
-		<span class="font-bold tracking-tight text-lg">{title}</span>
-		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
-	</div>
-	{description && <span class={`text-sm ${isPrimary ? "opacity-70" : "text-gray-500"}`}>{description}</span>}
+    {isPrimary && <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 pointer-events-none"></div>}
+
+    <div class="flex justify-between items-center relative z-10">
+        <span class="font-black italic uppercase tracking-tighter text-xl">
+            {title}
+        </span>
+        
+        <div class={`transition-all duration-300 ${isPrimary ? "group-hover:translate-x-1" : "text-neon-green group-hover:translate-x-1"}`}>
+            <ArrowRight size={22} strokeWidth={3} />
+        </div>
+    </div>
+
+    {description && (
+        <span class={`text-[11px] font-mono uppercase tracking-widest relative z-10 transition-colors
+            ${isPrimary 
+                ? "text-black/70 group-hover:text-neon-green/70" 
+                : "text-white/40 group-hover:text-white/70"
+            }`}
+        >
+            {description}
+        </span>
+    )}
 </a>
+
+<style>
+    /* Opcional: Un pequeño sutil parpadeo al entrar */
+    a {
+        will-change: transform, border-color;
+    }
+</style>

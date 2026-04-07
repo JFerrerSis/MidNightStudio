@@ -1,53 +1,70 @@
 ---
 // src/components/cart/CartDrawer.astro
+import { 
+  X, User, CreditCard, ShoppingBag 
+} from 'lucide-astro';
 ---
 
 <div id="cart-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-60 hidden opacity-0 transition-opacity duration-500"></div>
 
-<div id="cart-drawer" class="fixed inset-y-0 right-0 w-full max-w-sm bg-[#08090d] border-l border-neon-green/20 z-70 translate-x-full transition-transform duration-500 flex flex-col shadow-[-20px_0_50px_rgba(0,0,0,0.9)]">
+<div id="cart-drawer" class="fixed inset-y-0 right-0 w-full max-w-sm bg-[#08090d] border-l border-white/10 z-70 translate-x-full transition-transform duration-500 flex flex-col shadow-[-20px_0_50px_rgba(0,0,0,0.9)]">
   
   <div class="p-6 border-b border-white/5 flex justify-between items-center bg-black/40">
-    <div class="flex items-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00f5d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-      <h2 class="font-mono text-neon-green text-[11px] uppercase tracking-[0.2em] font-bold">Resumen de mi Pedido</h2>
+    <div class="flex items-center gap-3">
+      <div class="text-neon-green">
+        <ShoppingBag size={18} strokeWidth={2.5} />
+      </div>
+      <h2 class="font-mono text-white text-[11px] uppercase tracking-[0.2em] font-black">Mi Carrito</h2>
     </div>
-    <button id="close-cart" class="group flex items-center gap-2 text-white/30 hover:text-white transition-colors">
+    <button id="close-cart" class="group flex items-center gap-2 text-white/30 hover:text-neon-green transition-all">
       <span class="font-mono text-[10px] tracking-widest uppercase">Cerrar</span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      <X size={18} strokeWidth={2} class="group-hover:rotate-90 transition-transform" />
     </button>
   </div>
 
   <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar"></div>
 
-  <div id="order-form" class="px-6 py-5 border-t border-white/5 bg-white/2 space-y-4 hidden text-white">
+  <div id="order-form" class="px-6 py-5 border-t border-white/5 bg-white/2 space-y-4 hidden animate-fade-in">
     <div class="space-y-3">
       <div class="flex items-center gap-2 mb-1">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00f5d4" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <User size={14} class="text-neon-green" />
         <h3 class="font-mono text-[10px] text-white/60 tracking-widest uppercase font-bold">Datos de Entrega</h3>
       </div>
-      <input type="text" id="cust-name" placeholder="Tu nombre completo" class="w-full bg-black/40 border border-white/10 p-3 text-xs focus:border-neon-green outline-none text-white transition-all" />
+      
+      <input type="text" id="cust-name" placeholder="NOMBRE COMPLETO" class="w-full bg-black/40 border border-white/10 p-3 text-[10px] font-mono focus:border-neon-green/50 rounded-xl outline-none text-white transition-all uppercase" />
+      
       <div class="grid grid-cols-2 gap-3">
-        <input type="tel" id="cust-id" placeholder="Cédula / ID" class="bg-black/40 border border-white/10 p-3 text-xs outline-none focus:border-neon-green text-white transition-all" />
-        <input type="tel" id="cust-phone" placeholder="Teléfono" class="bg-black/40 border border-white/10 p-3 text-xs outline-none focus:border-neon-green text-white transition-all" />
+        <input type="tel" id="cust-id" placeholder="CÉDULA / ID" class="bg-black/40 border border-white/10 p-3 text-[10px] font-mono rounded-xl outline-none focus:border-neon-green/50 text-white transition-all uppercase" />
+        <input type="tel" id="cust-phone" placeholder="TELÉFONO" class="bg-black/40 border border-white/10 p-3 text-[10px] font-mono rounded-xl outline-none focus:border-neon-green/50 text-white transition-all uppercase" />
       </div>
-      <select id="cust-delivery" class="w-full bg-black border border-white/10 p-3 text-xs outline-none focus:border-neon-green text-white/80">
+
+      <select id="cust-delivery" class="w-full bg-black/60 border border-white/10 p-3 text-[10px] font-mono rounded-xl outline-none focus:border-neon-green/50 text-white/80 appearance-none uppercase">
         <option value="PICKUP">Retiro en tienda (Pickup)</option>
         <option value="DELIVERY">Envío a domicilio (Delivery)</option>
       </select>
-      <textarea id="cust-address" placeholder="Dirección detallada..." class="w-full bg-black/40 border border-white/10 p-3 text-xs outline-none h-16 focus:border-neon-green text-white transition-all resize-none hidden"></textarea>
+
+      <textarea id="cust-address" placeholder="DIRECCIÓN DETALLADA..." class="w-full bg-black/40 border border-white/10 p-3 text-[10px] font-mono rounded-xl outline-none h-16 focus:border-neon-green/50 text-white transition-all resize-none hidden uppercase"></textarea>
     </div>
-    <select id="cust-payment" class="w-full bg-black border border-white/10 p-3 text-xs outline-none focus:border-neon-green text-white/80">
-        <option value="PAGO MÓVIL">💸 Pago Móvil</option>
-        <option value="ZELLE">💎 Zelle</option>
-        <option value="EFECTIVO">💵 Efectivo (USD/BS)</option>
-    </select>
+
+    <div class="space-y-3 pt-2">
+      <div class="flex items-center gap-2 mb-1">
+        <CreditCard size={14} class="text-neon-green" />
+        <h3 class="font-mono text-[10px] text-white/60 tracking-widest uppercase font-bold">Método de Pago</h3>
+      </div>
+      <select id="cust-payment" class="w-full bg-black/60 border border-white/10 p-3 text-[10px] font-mono rounded-xl outline-none focus:border-neon-green/50 text-white/80 appearance-none uppercase">
+          <option value="PAGO MÓVIL">💸 Pago Móvil</option>
+          <option value="ZELLE">💎 Zelle</option>
+          <option value="EFECTIVO">💵 Efectivo (USD/BS)</option>
+      </select>
+    </div>
   </div>
 
   <div class="p-6 border-t border-white/5 bg-black/60">
-    <div class="flex justify-between items-end mb-6">
+    <div class="flex justify-between items-center mb-6">
+      <span class="font-mono text-[10px] text-white/40 uppercase tracking-widest">Total Estimado</span>
       <span id="total-amount" class="text-neon-green font-black text-3xl tracking-tighter">$0.00</span>
     </div>
-    <button id="send-whatsapp" class="w-full bg-neon-green text-black py-5 font-black uppercase italic text-[11px] tracking-[0.2em] hover:bg-white transition-all">
+    <button id="send-whatsapp" class="w-full bg-neon-green text-black py-5 rounded-xl font-black uppercase italic text-[11px] tracking-[0.2em] hover:bg-white transition-all active:scale-95 shadow-[0_10px_20px_rgba(0,245,212,0.15)] disabled:opacity-20 disabled:grayscale" disabled>
       Confirmar Pedido por WhatsApp
     </button>
   </div>
@@ -71,130 +88,128 @@
   const initCart = () => {
     const drawer = document.getElementById('cart-drawer');
     const overlay = document.getElementById('cart-overlay');
-    const itemsContainer = document.getElementById('cart-items');
-    const totalDisplay = document.getElementById('total-amount');
-    const orderForm = document.getElementById('order-form');
-    const deliverySelect = document.getElementById('cust-delivery') as HTMLSelectElement;
-    const addressInput = document.getElementById('cust-address') as HTMLTextAreaElement;
     const closeBtn = document.getElementById('close-cart');
-    const sendBtn = document.getElementById('send-whatsapp');
+    const itemsContainer = document.getElementById('cart-items');
+    const totalEl = document.getElementById('total-amount');
+    const orderForm = document.getElementById('order-form');
+    const whatsappBtn = document.getElementById('send-whatsapp') as HTMLButtonElement;
 
-    if (!drawer || !overlay) return;
-
-    // --- RENDERIZADO E ITEMS ---
-    let lastItemsCount = cartItems.get().length;
-
-    cartItems.subscribe(items => {
-      if (!itemsContainer) return;
-
-      if (items.length > lastItemsCount && lastItemsCount !== 0) {
-        const addedItem = items[items.length - 1];
-        window.midnightToast?.(`${addedItem.nombre} añadido al carrito`, 'success');
+    // --- 1. Sincronización de Apertura (Segura) ---
+    const unsubsOpen = isCartOpen.subscribe(open => {
+      if (open) {
+        overlay?.classList.remove('hidden');
+        setTimeout(() => {
+          overlay?.classList.replace('opacity-0', 'opacity-100');
+          drawer?.classList.remove('translate-x-full');
+        }, 10);
+      } else {
+        drawer?.classList.add('translate-x-full');
+        overlay?.classList.replace('opacity-100', 'opacity-0');
+        setTimeout(() => overlay?.classList.add('hidden'), 500);
       }
-      lastItemsCount = items.length;
+    });
+
+    // Corrección error TS 2779: Asignación sin encadenamiento opcional
+    if (closeBtn) closeBtn.onclick = () => isCartOpen.set(false);
+    if (overlay) overlay.onclick = () => isCartOpen.set(false);
+
+    // --- 2. Renderizado de Items ---
+    const unsubsItems = cartItems.subscribe(items => {
+      if (!itemsContainer || !totalEl || !orderForm || !whatsappBtn) return;
 
       if (items.length === 0) {
-        itemsContainer.innerHTML = `<div class="py-20 text-center opacity-20 font-mono text-[10px] uppercase tracking-widest">Carrito vacío</div>`;
-        orderForm?.classList.add('hidden');
+        itemsContainer.innerHTML = `
+          <div class="flex flex-col items-center justify-center h-full text-white/20 space-y-4">
+             <p class="font-mono text-[10px] uppercase tracking-widest italic">// Carrito Vacío</p>
+          </div>
+        `;
+        orderForm.classList.add('hidden');
+        whatsappBtn.disabled = true;
         return;
       }
 
-      orderForm?.classList.remove('hidden');
-      itemsContainer.innerHTML = items.map((item) => `
-        <div class="flex gap-4 bg-white/[0.03] p-4 border border-white/5 relative group">
-          <img src="${item.imagen}" class="w-16 h-16 object-cover" />
-          <div class="flex-1">
-            <div class="flex justify-between">
-              <h4 class="text-[11px] text-white font-bold uppercase">${item.nombre}</h4>
-              <button onclick="window.removeItem('${item.id}', '${item.nombre}')" class="text-white/10 hover:text-red-500 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+      orderForm.classList.remove('hidden');
+      whatsappBtn.disabled = false;
+
+      itemsContainer.innerHTML = items.map(item => `
+        <div class="flex gap-4 bg-white/5 border border-white/5 p-3 rounded-2xl group transition-all hover:border-neon-green/20">
+          <img src="${item.imagen}" class="w-16 h-16 object-cover rounded-xl border border-white/5" />
+          <div class="flex-1 flex flex-col justify-between">
+            <div class="flex justify-between items-start">
+              <h4 class="text-[10px] font-black uppercase text-white tracking-tighter w-full pr-4 leading-tight">${item.nombre}</h4>
+              <button onclick="window.removeItem('${item.id}', '${item.nombre}')" class="text-white/20 hover:text-red-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
               </button>
             </div>
-            <div class="flex items-center justify-between mt-2">
-              <div class="flex items-center bg-black/60 border border-white/10">
-                <button onclick="window.changeQty('${item.id}', -1)" class="px-3 py-1 text-white/40 hover:text-white">-</button>
-                <span class="px-2 text-[11px] font-mono text-neon-green">${item.cantidad}</span>
-                <button onclick="window.changeQty('${item.id}', 1)" class="px-3 py-1 text-white/40 hover:text-white">+</button>
+            <div class="flex justify-between items-center">
+              <span class="font-mono text-neon-green font-bold">$${(item.precio * item.cantidad).toFixed(2)}</span>
+              <div class="flex items-center gap-3 bg-black/40 rounded-lg px-2 py-1 border border-white/10">
+                <button onclick="window.changeQty('${item.id}', -1)" class="text-white/40 hover:text-neon-green transition-colors">-</button>
+                <span class="text-[10px] font-mono text-white/80">${item.cantidad}</span>
+                <button onclick="window.changeQty('${item.id}', 1)" class="text-white/40 hover:text-neon-green transition-colors">+</button>
               </div>
-              <span class="text-white font-mono text-xs font-bold">$${(item.precio * item.cantidad).toFixed(2)}</span>
             </div>
           </div>
         </div>
       `).join('');
     });
 
-    // --- FUNCIONES GLOBALES ---
+    const unsubsTotal = cartTotal.subscribe(val => {
+      if (totalEl) totalEl.textContent = `$${val.toFixed(2)}`;
+    });
+
+    const updateForm = () => {
+      const deliveryEl = document.getElementById('cust-delivery') as HTMLSelectElement;
+      const addrEl = document.getElementById('cust-address') as HTMLTextAreaElement;
+      
+      if (deliveryEl.value === 'DELIVERY') {
+        addrEl?.classList.remove('hidden');
+      } else {
+        addrEl?.classList.add('hidden');
+      }
+
+      customerData.set({
+        nombre: (document.getElementById('cust-name') as HTMLInputElement).value,
+        cedula: (document.getElementById('cust-id') as HTMLInputElement).value,
+        telefono: (document.getElementById('cust-phone') as HTMLInputElement).value,
+        direccion: addrEl.value,
+        metodoEntrega: deliveryEl.value as 'DELIVERY' | 'PICKUP',
+        metodoPago: (document.getElementById('cust-payment') as HTMLSelectElement).value,
+      });
+    };
+
+    ['cust-name', 'cust-id', 'cust-phone', 'cust-delivery', 'cust-address', 'cust-payment'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', updateForm);
+    });
+
+    if (whatsappBtn) {
+      whatsappBtn.onclick = () => {
+        updateForm();
+        sendOrderToWhatsApp();
+      };
+    }
+
+    // Funciones globales
     window.changeQty = (id, delta) => delta > 0 ? increaseQuantity(id) : decreaseQuantity(id);
     window.removeItem = (id, nombre) => {
       removeFromCart(id);
-      window.midnightToast?.(`${nombre} eliminado`, 'error');
+      window.midnightToast?.(`${nombre} ELIMINADO`, 'error');
     };
 
-    // --- SUSCRIPCIONES UI ---
-    isCartOpen.subscribe(open => {
-      if (open) {
-        drawer.classList.remove('translate-x-full');
-        overlay.classList.remove('hidden');
-        setTimeout(() => overlay.classList.add('opacity-100'), 10);
-        document.body.style.overflow = 'hidden';
-      } else {
-        drawer.classList.add('translate-x-full');
-        overlay.classList.remove('opacity-100');
-        setTimeout(() => overlay.classList.add('hidden'), 500);
-        document.body.style.overflow = '';
-      }
-    });
-
-    cartTotal.subscribe(total => {
-      if (totalDisplay) totalDisplay.innerText = `$${total.toFixed(2)}`;
-    });
-
-    // --- EVENT LISTENERS ---
-    deliverySelect?.addEventListener('change', (e) => {
-      const val = (e.target as HTMLSelectElement).value;
-      val === 'DELIVERY' ? addressInput?.classList.remove('hidden') : addressInput?.classList.add('hidden');
-    });
-
-    closeBtn?.addEventListener('click', () => isCartOpen.set(false));
-    overlay?.addEventListener('click', () => isCartOpen.set(false));
-
-    sendBtn?.addEventListener('click', () => {
-      const currentItems = cartItems.get();
-      if (currentItems.length === 0) return window.midnightToast?.("El carrito está vacío", "error");
-
-      const name = (document.getElementById('cust-name') as HTMLInputElement).value.trim();
-      const cid = (document.getElementById('cust-id') as HTMLInputElement).value.trim();
-      const phone = (document.getElementById('cust-phone') as HTMLInputElement).value.trim();
-      const delivery = (document.getElementById('cust-delivery') as HTMLSelectElement).value;
-      const address = (document.getElementById('cust-address') as HTMLTextAreaElement).value.trim();
-
-      if (!name || !cid || !phone || (delivery === 'DELIVERY' && !address)) {
-        window.midnightToast?.("Faltan datos de contacto", "warning");
-        if(!name) document.getElementById('cust-name')?.classList.add('border-red-500/50');
-        if(!cid) document.getElementById('cust-id')?.classList.add('border-red-500/50');
-        if(!phone) document.getElementById('cust-phone')?.classList.add('border-red-500/50');
-        if(delivery === 'DELIVERY' && !address) addressInput?.classList.add('border-red-500/50');
-        return;
-      }
-
-      window.midnightToast?.("Abriendo canal de WhatsApp", "success");
-      customerData.set({
-        nombre: name,
-        cedula: cid,
-        telefono: phone,
-        metodoEntrega: delivery as any,
-        direccion: address,
-        metodoPago: (document.getElementById('cust-payment') as HTMLSelectElement).value
-      });
-      setTimeout(() => sendOrderToWhatsApp(), 1000);
-    });
-
-    document.querySelectorAll('input, textarea').forEach(el => {
-      el.addEventListener('input', () => el.classList.remove('border-red-500/50'));
-    });
+    // Limpieza estricta
+    document.addEventListener('astro:before-preparation', () => {
+      unsubsOpen();
+      unsubsItems();
+      unsubsTotal();
+    }, { once: true });
   };
 
-  // Inicialización para Astro
   document.addEventListener('astro:page-load', initCart);
-  initCart();
 </script>
+
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 3px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 245, 212, 0.2); border-radius: 10px; }
+  @keyframes quickFade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-fade-in { animation: quickFade 0.3s ease-out; }
+</style>

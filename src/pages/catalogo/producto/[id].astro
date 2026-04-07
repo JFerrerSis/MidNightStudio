@@ -1,8 +1,18 @@
 ---
 import CatalogLayout from '../../../layouts/CatalogoLayout.astro';
 import ProductCard from '../../../components/ui/ProductCard.astro';
+import ParticlesBg from '../../../components/ui/ParticlesBackground.astro';
 import productosData from '../../../data/productos.json'; 
 import type { Product } from '../../../types/product';
+import { Image } from 'astro:assets'; // Optimización de imágenes
+
+import { 
+  ArrowLeft, Tag, FileText, ShoppingCart, 
+  Layout, MapPin, Box, ArrowRight 
+} from 'lucide-astro';
+
+// Renderizado estático para velocidad máxima
+export const prerender = true;
 
 export async function getStaticPaths() {
   const products = (productosData as Product[]);
@@ -14,8 +24,8 @@ export async function getStaticPaths() {
 
 const { product } = Astro.props;
 
-const allProducts = (productosData as Product[]);
-const relacionados = allProducts
+// Lógica de relacionados optimizada
+const relacionados = (productosData as Product[])
   .filter(p => p.categoria === product.categoria && p.id !== product.id)
   .slice(0, 4);
 
@@ -23,93 +33,111 @@ const productString = JSON.stringify(product);
 ---
 
 <CatalogLayout title={`${product.nombre} | MidNight Studio`}>
-  <main class="max-w-6xl mx-auto px-6 pt-24 md:pt-32 pb-24 relative overflow-hidden contain-paint">
+
+  <main class="max-w-6xl mx-auto px-6 pt-24 md:pt-32 pb-24 relative z-10 contain-layout">
     
-  <a 
-  href="/catalogo" 
-  data-astro-history="replace"
-  data-astro-prefetch="viewport"
-  class="inline-flex items-center gap-3 text-white/40 hover:text-neon-green transition-all font-mono text-[10px] uppercase italic mb-12 group tracking-widest animate-fade-in"
->
-  <span class="group-hover:-translate-x-1 transition-transform bg-white/5 border border-white/10 px-2 py-1">←</span> 
-  <span>Regresar al Catálogo</span>
-</a>
+    <a 
+      href="/catalogo" 
+      data-astro-prefetch="hover"
+      class="inline-flex items-center gap-3 text-white/40 hover:text-neon-green transition-all font-mono text-[10px] uppercase italic mb-12 group tracking-widest animate-fade-in"
+    >
+      <span class="group-hover:-translate-x-1 transition-transform bg-white/5 border border-white/10 px-3 py-1 rounded-full">
+        <ArrowLeft size={14} strokeWidth={2.5} />
+      </span> 
+      <span>Regresar al Catálogo</span>
+    </a>
 
     <div class="grid lg:grid-cols-2 gap-8 md:gap-16 items-start">
       
-      <div class="relative aspect-square w-full overflow-hidden bg-black/40 border border-white/5 rounded shadow-2xl animate-fast-up">
-        <img 
+      <div class="relative aspect-square w-full overflow-hidden bg-black/40 border border-white/10 rounded-2xl shadow-2xl animate-fast-up">
+        <Image 
           src={product.imagen} 
-          alt={product.nombre} 
-          decoding="async"
+          alt={product.nombre}
+          width={800}
+          height={800}
+          format="webp"
           loading="eager"
-          class="w-full h-full object-cover"
+          class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
           style={`view-transition-name: card-${product.id};`} 
         />
-        <div class="absolute top-4 left-4 bg-black/90 border border-neon-green/20 px-3 py-1">
-          <p class="text-[8px] font-mono text-neon-green tracking-[0.3em] uppercase italic">{product.categoria}</p>
+        <div class="absolute top-4 left-4 bg-black/90 border border-neon-green/30 px-4 py-1.5 rounded-full backdrop-blur-md flex items-center gap-2">
+          <Tag size={10} strokeWidth={3} class="text-neon-green" />
+          <p class="text-[9px] font-mono text-neon-green tracking-[0.2em] uppercase font-bold">{product.categoria}</p>
         </div>
       </div>
 
       <div class="flex flex-col space-y-8 md:pt-4">
         
-        <header class="border-l-2 border-neon-green pl-6 md:pl-8 animate-fast-left">
-          <h1 class="text-2xl md:text-4xl font-black italic uppercase tracking-tighter text-white leading-none mb-2">
+        <header class="border-l-4 border-neon-green/80 pl-6 md:pl-8 animate-fast-left rounded-sm">
+          <h1 class="text-3xl md:text-5xl font-black italic uppercase tracking-tighter text-white leading-tight mb-2">
             {product.nombre}
           </h1>
-          <span class="text-[10px] font-mono text-white/20 tracking-[0.5em] uppercase italic">Especificaciones Técnicas</span>
+          <div class="flex items-center gap-2">
+            <FileText size={12} class="text-neon-green/40" />
+            <span class="text-[10px] font-mono text-neon-green/40 tracking-[0.4em] uppercase font-bold">Especificaciones de Diseño</span>
+          </div>
         </header>
 
         <div class="space-y-8 animate-fade-in" style="animation-delay: 150ms;">
           <div class="prose prose-invert">
-            <p class="text-white/60 text-sm md:text-lg font-light leading-relaxed max-w-md italic">
-              {product.descripcion || "Diseño exclusivo de la colección MidNight Studio. Fabricación optimizada para máxima definición textil."}
+            <p class="text-white/60 text-sm md:text-lg font-light leading-relaxed max-w-md italic border-l border-white/5 pl-6">
+              {product.descripcion || "Edición limitada MidNight Studio. Una pieza conceptual diseñada para el entorno urbano contemporáneo."}
             </p>
           </div>
 
-          <div class="flex items-center gap-6 pt-4 border-t border-white/5">
+          <div class="flex items-center gap-8 pt-6 border-t border-white/10">
             <div class="flex flex-col">
-              <span class="text-[9px] font-mono text-white/30 uppercase tracking-widest mb-1">Precio Unitario</span>
-              <span class="text-4xl md:text-5xl font-mono font-bold text-neon-green tracking-tighter italic">${product.precio.toFixed(2)}</span>
+              <span class="text-[9px] font-mono text-white/30 uppercase tracking-widest mb-1">Precio</span>
+              <span class="text-4xl md:text-6xl font-mono font-bold text-white tracking-tighter">${product.precio.toFixed(2)}</span>
             </div>
-            <div class="h-12 w-px bg-white/5"></div>
-            <div class="flex flex-col">
-              <span class="text-[9px] font-mono text-white/30 uppercase tracking-widest mb-1">Status</span>
-              <span class="text-xs font-bold text-white uppercase italic bg-white/5 px-2 py-1 border border-white/10">Disponible</span>
-            </div>
+            <div class="h-14 w-px bg-white/10 rotate-12"></div>
           </div>
           
           <div class="pt-4">
             <button 
-              class="add-to-cart-btn w-full md:w-auto px-12 py-5 bg-neon-green text-black font-black uppercase italic text-xs tracking-[0.2em] hover:bg-white transition-all active:scale-95 shadow-[0_0_20px_rgba(0,245,212,0.2)]"
+              id="add-to-cart-main"
+              class="group/buy w-full md:w-auto px-16 py-5 bg-neon-green text-black font-black uppercase text-[11px] tracking-[0.25em] hover:bg-white transition-all active:scale-95 shadow-[0_10px_30px_rgba(0,245,212,0.25)] rounded-xl flex items-center justify-center gap-3"
               data-product={productString}
             >
-              Adquirir 
+              <ShoppingCart size={18} strokeWidth={2.5} class="transition-transform group-hover/buy:scale-110" />
+              Añadir al Carrito
             </button>
           </div>
         </div>
 
-        <div class="pt-8 grid grid-cols-2 gap-4 animate-fade-in" style="animation-delay: 300ms;">
-            <div class="flex flex-col border-l border-white/10 pl-4 py-2">
-                <span class="text-[7px] font-mono uppercase tracking-widest text-white/40">Colección</span>
-                <span class="text-[10px] font-bold text-white uppercase italic">MidNight 2026</span>
+        <div class="pt-10 grid grid-cols-2 gap-6 animate-fade-in" style="animation-delay: 300ms;">
+            <div class="flex flex-col border border-white/5 bg-white/2 p-4 rounded-2xl group hover:border-neon-green/20 transition-colors">
+                <div class="flex items-center gap-2 mb-1">
+                  <Layout size={12} class="text-white/20" />
+                  <span class="text-[8px] font-mono uppercase tracking-widest text-white/30">Colección</span>
+                </div>
+                <span class="text-[11px] font-bold text-white uppercase italic">MidNight v2.0</span>
             </div>
-            <div class="flex flex-col border-l border-white/10 pl-4 py-2">
-                <span class="text-[7px] font-mono uppercase tracking-widest text-white/40">Origen</span>
-                <span class="text-[10px] font-bold text-white uppercase italic">Maracaibo, VZLA</span>
+            <div class="flex flex-col border border-white/5 bg-white/2 p-4 rounded-2xl group hover:border-neon-green/20 transition-colors">
+                <div class="flex items-center gap-2 mb-1">
+                  <MapPin size={12} class="text-white/20" />
+                  <span class="text-[8px] font-mono uppercase tracking-widest text-white/30">Origen</span>
+                </div>
+                <span class="text-[11px] font-bold text-white uppercase italic">Mcbo, VZLA</span>
             </div>
         </div>
       </div>
     </div>
 
     {relacionados.length > 0 && (
-      <section class="mt-32 pt-16 border-t border-white/5 animate-fade-in" style="animation-delay: 450ms;">
-        <div class="mb-10 flex items-center justify-between">
-            <h2 class="text-xs font-mono uppercase tracking-[0.5em] text-white/30 italic">Diseños Relacionados</h2>
-            <div class="h-px flex-1 mx-8 bg-white/5"></div>
-            <a href="/catalogo" class="text-[9px] font-mono text-neon-green uppercase tracking-widest hover:text-white transition-colors">Ver Todo</a>
+      <section class="mt-32 pt-16 border-t border-white/10 animate-fade-in" style="animation-delay: 450ms;">
+        <div class="mb-12 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <Box size={14} class="text-neon-green" />
+              <h2 class="text-xs font-mono uppercase tracking-[0.5em] text-white/40 italic">Relacionados</h2>
+            </div>
+            <div class="h-px flex-1 mx-10 bg-linear-to-r from-white/10 to-transparent"></div>
+            <a href="/catalogo" class="group/all text-[10px] font-mono text-neon-green hover:text-white transition-all uppercase tracking-widest border border-neon-green/20 px-4 py-2 rounded-full flex items-center gap-2">
+              Ver Catálogo
+              <ArrowRight size={12} strokeWidth={2.5} class="transition-transform group-hover/all:translate-x-1" />
+            </a>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
           {relacionados.map((item) => <ProductCard {...item} />)}
         </div>
       </section>
@@ -117,35 +145,51 @@ const productString = JSON.stringify(product);
   </main>
 </CatalogLayout>
 
+<script>
+  import { addToCart, isCartOpen } from '../../../store/cartStore';
+
+  const initProductPage = () => {
+    const buyBtn = document.getElementById('add-to-cart-main');
+    
+    if (buyBtn) {
+      buyBtn.onclick = () => {
+        const productData = JSON.parse(buyBtn.dataset.product || '{}');
+        addToCart(productData);
+        isCartOpen.set(true); // Abrir el carrito automáticamente al añadir
+        
+        // Efecto visual opcional en el botón
+        buyBtn.textContent = "¡Añadido!";
+        buyBtn.classList.replace('bg-neon-green', 'bg-white');
+        setTimeout(() => {
+          buyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover/buy:scale-110"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg> Añadir al Carrito`;
+          buyBtn.classList.replace('bg-white', 'bg-neon-green');
+        }, 1500);
+      };
+    }
+  };
+
+  document.addEventListener('astro:page-load', initProductPage);
+</script>
+
 <style is:global>
-  /* Optimizaciones de Bajo Nivel */
-  .animate-fast-up, .animate-fast-left, .animate-fade-in {
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-    transform: translate3d(0,0,0);
-  }
-
   @keyframes quickUp {
-    from { transform: translate3d(0, 12px, 0); opacity: 0; }
+    from { transform: translate3d(0, 30px, 0); opacity: 0; }
     to { transform: translate3d(0, 0, 0); opacity: 1; }
   }
-
   @keyframes quickLeft {
-    from { transform: translate3d(-12px, 0, 0); opacity: 0; }
+    from { transform: translate3d(-30px, 0, 0); opacity: 0; }
     to { transform: translate3d(0, 0, 0); opacity: 1; }
   }
-
   @keyframes quickFade {
     from { opacity: 0; }
     to { opacity: 1; }
   }
-
-  .animate-fast-up { animation: quickUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
-  .animate-fast-left { animation: quickLeft 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
-  .animate-fade-in { animation: quickFade 0.5s ease-out both; }
-
-  /* Corregir View Transition para evitar el "salto" visual */
-  ::view-transition-old(root), ::view-transition-new(root) {
-    animation-duration: 0.2s;
+  .animate-fast-up { animation: quickUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-fast-left { animation: quickLeft 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-fade-in { animation: quickFade 0.8s ease-out both; }
+  
+  /* Optimizamos el renderizado del navegador */
+  .contain-layout {
+    contain: layout;
   }
 </style>

@@ -4,50 +4,79 @@ import LinkCard from '../components/ui/LinkCard.astro';
 import Header from '../components/ui/Header.astro';
 import Particles from '../components/ui/ParticlesBackground.astro';
 
+// Importamos los iconos de Lucide
+import { ShoppingBag, MessageCircle, Instagram, ExternalLink } from 'lucide-astro';
+
 const phone = import.meta.env.PUBLIC_WHATSAPP_NUMBER;
 const message = "¡Hola MidNight! 🌙 Me gustaría obtener información sobre sus servicios.";
 const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 ---
 
-<Layout title="MidNight Studio">
+<Layout title="MidNight Studio | Links">
   <Particles />
 
   <div 
-    class="flex flex-col items-center justify-center min-h-[80vh] max-w-112.5 mx-auto px-6 relative z-10 py-12"
+    class="flex flex-col items-center justify-center min-h-[90vh] max-w-112.5 mx-auto px-6 relative z-10 py-20"
     transition:animate="fade"
   >
     
-    <Header />
+    <div class="mb-12 text-center animate-fade-in">
+        <Header />
 
-    <div class="w-full space-y-3">
+    </div>
+
+    <div class="w-full space-y-4 animate-slide-up">
+      
       <LinkCard 
         title="Catálogo Digital" 
         href="/catalogo" 
-        colorClass="border-neon-green text-neon-green"
+        isPrimary={true}
       >
-        <svg slot="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-9-5.5V3l9 5.5V16Z"/><path d="M12 21 3 15.5V8l9-5.5 9 5.5v7.5L12 21Z"/><path d="M3 8l9 5.5L21 8"/><path d="M12 21v-8.5"/></svg>
+        <ShoppingBag slot="icon" size={20} strokeWidth={2.5} />
       </LinkCard>
       
      <LinkCard 
         title="WhatsApp" 
         href={whatsappUrl} 
-        colorClass="border-emerald-900 text-emerald-500"
       >
-        <svg slot="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <MessageCircle slot="icon" size={20} strokeWidth={2} class="text-emerald-400" />
       </LinkCard>
 
       <LinkCard 
         title="Instagram"
         href="https://www.instagram.com/midnighttstudio/" 
-        colorClass="border-neon-pink text-neon-pink shadow-[0_5px_15px_rgba(255,0,127,0.1)]"
+        
       >
-        <svg slot="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        <Instagram slot="icon" size={20} strokeWidth={2} class="text-pink-500" />
       </LinkCard>
+
+      <div class="pt-8 w-full flex justify-center">
+        <div class="h-px w-12 bg-white/10"></div>
+      </div>
+      
+
     </div>
 
   </div>
 </Layout>
 
-<style>
-  /* ELIMINADO: Ya no bloqueamos el scroll del body aquí */
+<style is:global>
+  /* Animaciones específicas para la entrada de la lista de links */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-fade-in {
+    animation: quickFade 1s ease-out forwards;
+  }
+
+  @keyframes quickFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 </style>

@@ -1,43 +1,68 @@
 ---
+// src/components/ui/LinkCard.astro
 interface Props {
-  title: string;
-  href: string;
-  colorClass?: string;
+    href: string;
+    title: string;
+    description?: string; // Opcional
+    isPrimary?: boolean;  // Opcional
+    colorClass?: string;  // Opcional, para no romper tu lógica de colores
 }
 
-const { title, href, colorClass = "border-neon-green text-neon-green" } = Astro.props;
+// Corregimos la extracción de props para incluir todas las que declaraste
+const { 
+  title, 
+  href, 
+  description, 
+  isPrimary, 
+  colorClass = "border-neon-green text-neon-green" 
+} = Astro.props;
 ---
 
 <a 
   href={href}
-  target="_blank"
-  class={`link-cyber group relative flex items-center w-full p-4 mb-4 rounded-sm border-l-4 bg-black/40 backdrop-blur-md transition-all duration-300 overflow-hidden ${colorClass} hover:translate-x-2`}
+  class={`link-cyber group relative flex flex-col w-full p-4 mb-4 rounded-sm border-l-4 bg-black/40 backdrop-blur-md transition-all duration-300 overflow-hidden ${colorClass} hover:translate-x-2`}
 >
-  <div class="mr-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">
-    <slot name="icon" />
+  <div class="flex items-center w-full">
+    <div class="mr-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">
+      <slot name="icon" />
+    </div>
+
+    <span class="font-mono font-bold text-sm tracking-[0.2em] uppercase italic flex-1">
+      {title}
+    </span>
+
+    <div class="opacity-20 group-hover:opacity-100 transition-opacity">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+    </div>
   </div>
 
-  <span class="font-mono font-bold text-sm tracking-[0.2em] uppercase italic flex-1">
-    {title}
-  </span>
-
-  <div class="opacity-20 group-hover:opacity-100 transition-opacity">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
-  </div>
+  {description && (
+    <div class="mt-1 ml-9 opacity-40 group-hover:opacity-100 transition-opacity">
+      <span class="text-[9px] font-mono tracking-widest uppercase italic">{description}</span>
+    </div>
+  )}
 </a>
 
 <script>
   // Animación de salida al hacer clic
-  document.querySelectorAll('.link-cyber').forEach(link => {
-    link.addEventListener('click', (e) => {
-      const href = (link as HTMLAnchorElement).href;
-      if (href.startsWith(window.location.origin) || href.startsWith('/')) {
-        e.preventDefault();
-        document.body.style.opacity = '0';
-        document.body.style.filter = 'brightness(2) blur(10px)';
-        document.body.style.transition = 'all 0.4s ease';
-        setTimeout(() => window.location.href = href, 400);
-      }
+  const initLinks = () => {
+    document.querySelectorAll('.link-cyber').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const anchor = link as HTMLAnchorElement;
+        const href = anchor.href;
+        
+        // Solo aplicar si es link interno
+        if (href.includes(window.location.origin) || href.startsWith('/')) {
+          e.preventDefault();
+          document.body.style.opacity = '0';
+          document.body.style.filter = 'brightness(2) blur(10px)';
+          document.body.style.transition = 'all 0.4s ease';
+          setTimeout(() => window.location.href = href, 400);
+        }
+      });
     });
-  });
+  }
+
+  // Compatible con Astro View Transitions
+  document.addEventListener('astro:page-load', initLinks);
 </script>
