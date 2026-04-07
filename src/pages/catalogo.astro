@@ -6,8 +6,8 @@ import ParticlesBg from '../components/ui/ParticlesBackground.astro';
 import productos from '../data/productos.json'; 
 import type { Product } from '../types/product';
 
-// 1. Importamos los iconos necesarios
-import { Grid2X2, Filter } from 'lucide-astro';
+// 1. Añadimos Search a los iconos
+import { Grid2X2, Filter, Search } from 'lucide-astro';
 
 const products = (productos as Product[]);
 const categories = ["TODOS", ...new Set(products.map(p => p.categoria.toUpperCase()))];
@@ -21,17 +21,25 @@ const categories = ["TODOS", ...new Set(products.map(p => p.categoria.toUpperCas
     <header class="mb-8 md:mb-16 border-l-4 border-neon-green pl-5 md:pl-8 opacity-0 animate-slide-in">
       <div class="flex items-center gap-3 mb-2">
         <Grid2X2 size={20} class="text-neon-green/60" strokeWidth={1.5} />
-        <span class="text-neon-green/60 font-mono text-xs md:text-sm tracking-[0.3em] uppercase"></span>
       </div>
       <h1 class="text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-none text-white">
         Catálogo
       </h1>
     </header>
 
-    <div class="flex flex-col items-center mb-12 md:mb-20 space-y-6">
-      <div class="flex items-center gap-2 text-white/20">
-        <Filter size={12} strokeWidth={3} />
-        <span class="font-mono text-[10px] uppercase tracking-[0.4em]">Filtrar por Categoría</span>
+    <div class="flex flex-col items-center mb-12 md:mb-20 space-y-8">
+      
+      <div class="w-full max-w-md relative group opacity-0 animate-slide-in" style="animation-delay: 0.1s">
+        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-neon-green transition-colors">
+          <Search size={18} />
+        </div>
+        <input 
+          type="text" 
+          id="product-search"
+          placeholder="BUSCAR.."
+          class="w-full bg-black/40 border border-white/10 py-4 pl-12 pr-4 rounded-2xl text-white font-mono text-xs tracking-widest outline-none focus:border-neon-green/40 focus:bg-neon-green/5 transition-all placeholder:text-white/10 uppercase"
+        />
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-px bg-neon-green group-focus-within:w-full transition-all duration-500 shadow-[0_0_8px_#00f5d4]"></div>
       </div>
 
       <div class="flex flex-wrap justify-center gap-3 md:gap-4 opacity-0 animate-slide-in" style="animation-delay: 0.15s">
@@ -62,6 +70,7 @@ const categories = ["TODOS", ...new Set(products.map(p => p.categoria.toUpperCas
         <div 
           class="product-item opacity-0 animate-fade-up" 
           data-category={item.categoria.toUpperCase()}
+          data-name={item.nombre.toUpperCase()}
           style={`animation-delay: ${0.2 + (index * 0.05)}s;`} 
         >
           <ProductCard {...item} />
@@ -72,23 +81,28 @@ const categories = ["TODOS", ...new Set(products.map(p => p.categoria.toUpperCas
 </CatalogLayout>
 
 <script>
-  // Tu script permanece igual, solo asegúrate de que lucide ya esté instalado
   const initFilters = () => {
     const buttons = document.querySelectorAll('.filter-btn');
     const items = document.querySelectorAll('.product-item');
     const skeletons = document.querySelectorAll('.skeleton-wrapper');
+    const searchInput = document.getElementById('product-search') as HTMLInputElement;
 
-    if (buttons.length === 0) return;
+    let currentCategory = 'TODOS';
+    let currentSearch = '';
 
-    const applyFilter = (category: string) => {
+    const applyFilters = () => {
       items.forEach((item) => {
-        const itemCat = item.getAttribute('data-category');
-        const shouldShow = category === 'TODOS' || itemCat === category;
+        const itemCat = item.getAttribute('data-category') || '';
+        const itemName = item.getAttribute('data-name') || '';
+        
+        const matchesCategory = currentCategory === 'TODOS' || itemCat === currentCategory;
+        const matchesSearch = itemName.includes(currentSearch.toUpperCase());
+
         const el = item as HTMLElement;
         el.style.animation = 'none';
         el.style.opacity = '1';
 
-        if (shouldShow) {
+        if (matchesCategory && matchesSearch) {
           el.classList.remove('hidden-instant');
         } else {
           el.classList.add('hidden-instant');
@@ -97,9 +111,17 @@ const categories = ["TODOS", ...new Set(products.map(p => p.categoria.toUpperCas
       skeletons.forEach(s => s.classList.add('hidden-instant'));
     };
 
+    // Evento de búsqueda
+    searchInput?.addEventListener('input', (e) => {
+      currentSearch = (e.target as HTMLInputElement).value;
+      applyFilters();
+    });
+
+    // Evento de botones de categoría
     buttons.forEach(btn => {
       btn.addEventListener('click', () => {
-        const category = btn.getAttribute('data-category') || 'TODOS';
+        currentCategory = btn.getAttribute('data-category') || 'TODOS';
+        
         buttons.forEach(b => {
            b.classList.remove('border-neon-green', 'bg-neon-green/10');
            b.querySelector('span')?.classList.replace('text-neon-green', 'text-white/50');
@@ -108,35 +130,35 @@ const categories = ["TODOS", ...new Set(products.map(p => p.categoria.toUpperCas
         btn.classList.add('border-neon-green', 'bg-neon-green/10');
         btn.querySelector('span')?.classList.replace('text-white/50', 'text-neon-green');
 
+        // Efecto visual de carga
         items.forEach(i => i.classList.add('hidden-instant'));
         skeletons.forEach(s => s.classList.remove('hidden-instant'));
 
         setTimeout(() => {
           // @ts-ignore
           if (!document.startViewTransition) {
-            applyFilter(category);
+            applyFilters();
           } else {
             // @ts-ignore
-            document.startViewTransition(() => applyFilter(category));
+            document.startViewTransition(() => applyFilters());
           }
         }, 150);
       });
     });
 
-    // Estado inicial
+    // Setup inicial
     const firstBtn = buttons[0] as HTMLElement;
     if(firstBtn) {
         firstBtn.classList.add('border-neon-green', 'bg-neon-green/10');
         firstBtn.querySelector('span')?.classList.replace('text-white/50', 'text-neon-green');
     }
-    skeletons.forEach(s => s.classList.add('hidden-instant'));
-    items.forEach(i => i.classList.remove('hidden-instant'));
   };
 
   document.addEventListener('astro:page-load', initFilters);
 </script>
 
 <style is:global>
+  /* Tus estilos previos se mantienen igual */
   @keyframes slide-in {
     from { opacity: 0; transform: translateX(-25px); }
     to { opacity: 1; transform: translateX(0); }
@@ -148,5 +170,4 @@ const categories = ["TODOS", ...new Set(products.map(p => p.categoria.toUpperCas
   .animate-slide-in { animation: slide-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   .animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   .hidden-instant { display: none !important; }
-  ::view-transition-group(root) { animation-duration: 0.3s; }
 </style>
