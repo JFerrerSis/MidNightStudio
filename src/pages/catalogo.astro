@@ -2,39 +2,41 @@
 import CatalogLayout from '../layouts/CatalogoLayout.astro';
 import ProductCard from '../components/ui/ProductCard.astro';
 import ProductSkeleton from '../components/ui/ProductSkeleton.astro'; 
-import productosData from '../data/productos.json'; 
+import ParticlesBg from '../components/ui/ParticlesBackground.astro'; // Importamos tu nuevo componente
+import productos from '../data/productos.json'; 
 import type { Product } from '../types/product';
 
-const products = (productosData as Product[]);
+const products = (productos as Product[]);
 const categories = ["TODOS", ...new Set(products.map(p => p.categoria.toUpperCase()))];
 ---
 
 <CatalogLayout title="Catálogo | MidNight Studio">
-  <main class="max-w-7xl mx-auto px-4 md:px-6 pt-24 md:pt-32 pb-24 relative">
+  <ParticlesBg />
+
+  <main class="max-w-7xl mx-auto px-4 md:px-6 pt-24 md:pt-32 pb-24 relative z-10">
     
-    <header class="mb-8 md:mb-16 border-l-2 border-neon-green pl-4 md:pl-6 opacity-0 animate-slide-in">
-      <h1 class="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
+    <header class="mb-8 md:mb-16 border-l-4 border-neon-green pl-5 md:pl-8 opacity-0 animate-slide-in">
+      <h1 class="text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-none text-white">
         Catálogo<br/>
       </h1>
     </header>
 
-    <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-10 md:mb-16 opacity-0 animate-slide-in" style="animation-delay: 0.15s">
+    <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-12 md:mb-20 opacity-0 animate-slide-in" style="animation-delay: 0.15s">
       {categories.map((cat) => (
         <button 
-          class="filter-btn group relative px-4 md:px-8 py-2 md:py-3 border border-white/5 bg-white/0.02 hover:border-neon-green/40 transition-all duration-300"
+          class="filter-btn group relative px-6 md:px-10 py-2.5 md:py-3.5 border border-white/10 bg-black/40 backdrop-blur-sm hover:border-neon-green/60 transition-all duration-300 rounded-full overflow-hidden"
           data-category={cat}
         >
-          <div class="absolute inset-0 bg-neon-green/0 group-hover:bg-neon-green/5 transition-colors"></div>
-          <span class="relative z-10 font-mono text-[9px] md:text-[11px] text-white/40 group-hover:text-neon-green transition-colors uppercase italic tracking-[0.2em] font-bold">
+          <div class="absolute inset-0 bg-neon-green/0 group-hover:bg-neon-green/10 transition-colors"></div>
+          <span class="relative z-10 font-mono text-[10px] md:text-[12px] text-white/50 group-hover:text-neon-green transition-colors uppercase tracking-[0.15em] font-bold">
             {cat}
           </span>
         </button>
       ))}
     </div>
 
-    <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-x-6 md:gap-y-12">
-      
-      {/* Skeletons para Feedback de Carga */}
+    <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-x-8 md:gap-y-14">
+      {/* Skeletons */}
       {Array.from({ length: 8 }).map((_, i) => (
         <div class="skeleton-wrapper hidden-instant">
           <ProductSkeleton />
